@@ -1,11 +1,12 @@
 /// "Fast Splittable Pseudorandom Number Generators,
 /// Guy L. Steele Jr., Doug Lea, Christine H. Flood"
-module Splittable =
-    type SplitMix =
-        { Seed : int64
-          Gamma : int64 }
-        member this.NextSeed() = { this with Seed = this.Seed + this.Gamma }
+type SplitMix =
+    { Seed : int64
+      Gamma : int64 }
+    member this.NextSeed() = { this with Seed = this.Seed + this.Gamma }
 
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module SplitMix =
     /// Mix the bits of a 64-bit arg to produce a result, computing a
     /// bijective function on 64-bit values.
     let mix64 (x : SplitMix) : int64 =
