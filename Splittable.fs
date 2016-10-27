@@ -82,4 +82,4 @@ module Splittable =
         mix64 <| x.NextSeed ()
 
     let nextFloat (x : SplitMix) : float =
-        double (nextInt64 x >>> 11) * doubleUlp
+        float (nextInt64 x >>> 11) * doubleUlp
