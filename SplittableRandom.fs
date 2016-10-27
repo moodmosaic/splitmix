@@ -1,9 +1,10 @@
 /// "Fast Splittable Pseudorandom Number Generators,
 /// Guy L. Steele Jr., Doug Lea, Christine H. Flood"
 type SplitMix =
-    { Seed : int64
-      Gamma : int64 }
-    member this.NextSeed() = { this with Seed = this.Seed + this.Gamma }
+    internal { Seed : int64
+               Gamma : int64 }
+    member internal this.NextSeed() =
+        { this with Seed = this.Seed + this.Gamma }
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module SplitMix =
@@ -12,7 +13,7 @@ module SplitMix =
     /// by splitting an already existing instance. We choose: the odd
     /// integer closest to 2^64/φ, where φ = (1 + √5)/2 is the golden
     /// ratio, and call it GOLDEN_GAMMA.
-    let [<Literal>] goldenGamma : int64 = 0x9e3779b97f4a7c15L
+    let [<Literal>] private goldenGamma : int64 = 0x9e3779b97f4a7c15L
 
     let create (seed : int64) (gamma : int64) : SplitMix =
         { Seed = seed
