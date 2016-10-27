@@ -60,8 +60,9 @@ module Splittable =
     [<Literal>]
     let goldenGamma : int64 = 0x9e3779b97f4a7c15L
 
-    let create' (seed: int64) (gamma : int64) : SplitMix =
-        { Seed = seed; Gamma = gamma }
+    let create' (seed : int64) (gamma : int64) : SplitMix =
+        { Seed = seed
+          Gamma = gamma }
 
     let create (seed : int64) : SplitMix =
         create' seed goldenGamma
