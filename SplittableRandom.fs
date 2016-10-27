@@ -7,6 +7,19 @@ type SplitMix =
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module SplitMix =
+    /// A predefined gamma value's needed for initializing the "root"
+    /// instances of SplittableRandom that is, instances not produced
+    /// by splitting an already existing instance. We choose: the odd
+    /// integer closest to 2^64/φ, where φ = (1 + √5)/2 is the golden
+    /// ratio, and call it GOLDEN_GAMMA.
+    let [<Literal>] goldenGamma : int64 = 0x9e3779b97f4a7c15L
+
+    let create (seed : int64) (gamma : int64) : SplitMix =
+        { Seed = seed
+          Gamma = gamma }
+
+    let create' (seed : int64) : SplitMix = create seed goldenGamma
+
     /// Mix the bits of a 64-bit arg to produce a result, computing a
     /// bijective function on 64-bit values.
     let mix64 (x : SplitMix) : int64 =
@@ -48,39 +61,16 @@ module SplitMix =
         if n < 24 then z ^^^ 0xaaaaaaaaaaaaaaaaL
         else z
 
-    /// The value 'DOUBLE_ULP' is the positive difference between 1.0
-    /// and the smallest double value larger than 1.0; it is used for
-    /// deriving a double value from a 64-bit long value.
-    let doubleUlp : float = 1.0 / double (1L <<< 53)
-
-    /// A predefined gamma value's needed for initializing the "root"
-    /// instances of SplittableRandom that is, instances not produced
-    /// by splitting an already existing instance. We choose: the odd
-    /// integer closest to 2^64/φ, where φ = (1 + √5)/2 is the golden
-    /// ratio, and call it GOLDEN_GAMMA.
-    [<Literal>]
-    let goldenGamma : int64 = 0x9e3779b97f4a7c15L
-
-    let create' (seed : int64) (gamma : int64) : SplitMix =
-        { Seed = seed
-          Gamma = gamma }
-
-    let create (seed : int64) : SplitMix =
-        create' seed goldenGamma
-
     let split (x : SplitMix) : SplitMix =
-        { Seed =
-            mix64
-            <| x.NextSeed ()
-          Gamma =
-            mixGamma
-            <| x.NextSeed () }
+        { Seed = mix64 <| x.NextSeed()
+          Gamma = mixGamma <| x.NextSeed() }
 
-    let nextInt32 (x : SplitMix) : int32 =
-        mix32 <| x.NextSeed ()
-
-    let nextInt64 (x : SplitMix) : int64 =
-        mix64 <| x.NextSeed ()
-
+    let nextInt32 (x : SplitMix) : int32 = mix32 <| x.NextSeed()
+    let nextInt64 (x : SplitMix) : int64 = mix64 <| x.NextSeed()
     let nextFloat (x : SplitMix) : float =
+        /// The value 'DOUBLE_ULP' is the positive difference between
+        /// 1.0 and the smallest double value, larger than 1.0; it is
+        /// used for deriving a double value via a 64-bit long value,
+        /// and in F# this is calculated as 1.0 / double (1L <<< 53).
+        let doubleUlp = 1.110223025e-16
         float (nextInt64 x >>> 11) * doubleUlp
