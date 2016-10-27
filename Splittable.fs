@@ -60,25 +60,25 @@ module Splittable =
     [<Literal>]
     let goldenGamma : int64 = 0x9e3779b97f4a7c15L
 
-    let create' (seed: int64) (gamma : int64) =
+    let create' (seed: int64) (gamma : int64) : SplitMix =
         { Seed = seed; Gamma = gamma }
 
-    let create (seed : int64) =
+    let create (seed : int64) : SplitMix =
         create' seed goldenGamma
 
-    let split (sm : SplitMix) =
+    let split (x : SplitMix) : SplitMix =
         { Seed =
             mix64
-            <| sm.NextSeed ()
+            <| x.NextSeed ()
           Gamma =
             mixGamma
-            <| sm.NextSeed () }
+            <| x.NextSeed () }
 
-    let nextInt32 (x : SplitMix) =
+    let nextInt32 (x : SplitMix) : int32 =
         mix32 <| x.NextSeed ()
 
-    let nextInt64 (x : SplitMix) =
+    let nextInt64 (x : SplitMix) : int64 =
         mix64 <| x.NextSeed ()
 
-    let nextFloat (s : SplitMix) =
-        double (nextInt64 s >>> 11) * doubleUlp
+    let nextFloat (x : SplitMix) : float =
+        double (nextInt64 x >>> 11) * doubleUlp
