@@ -1,3 +1,5 @@
+namespace SplitMix
+
 /// "Fast Splittable Pseudorandom Number Generators,
 /// Guy L. Steele Jr., Doug Lea, Christine H. Flood"
 type SplitMix =
