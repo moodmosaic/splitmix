@@ -2,6 +2,7 @@ namespace SplittableRandom
 
 /// "Fast Splittable Pseudorandom Number Generators,
 /// Guy L. Steele Jr., Doug Lea, Christine H. Flood"
+
 type SplitMix =
     internal { Seed : int64
                Gamma : int64 }
