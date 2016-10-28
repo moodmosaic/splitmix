@@ -2,7 +2,7 @@
 // for more guidance on F# programming.
 
 #load "Scenarios.fs"
-open SplitMix.Tests
+open SplittableRandom.Tests
 
 // Define your library scripting code here
 

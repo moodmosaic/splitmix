@@ -1,4 +1,4 @@
-namespace SplitMix
+namespace SplittableRandom
 
 /// "Fast Splittable Pseudorandom Number Generators,
 /// Guy L. Steele Jr., Doug Lea, Christine H. Flood"

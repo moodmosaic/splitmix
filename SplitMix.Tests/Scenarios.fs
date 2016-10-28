@@ -1,4 +1,6 @@
-﻿namespace SplitMix.Tests
+﻿module SplittableRandom.Tests.Scenarios
 
-type Class1() = 
-    member this.X = "F#"
+open SplittableRandom
+
+let ``Scenario 1`` () =
+    ()

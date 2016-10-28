@@ -2,7 +2,7 @@
 // for more guidance on F# programming.
 
 #load "SplitMix.fs"
-open SplitMix
+open SplittableRandom
 
 // Define your library scripting code here
 
