@@ -17,11 +17,12 @@ module SplitMix =
     /// ratio, and call it GOLDEN_GAMMA.
     let [<Literal>] private goldenGamma : int64 = 0x9e3779b97f4a7c15L
 
-    let create (seed : int64) (gamma : int64) : SplitMix =
+    let fromSeedAndGamma (seed : int64) (gamma : int64) : SplitMix =
         { Seed = seed
           Gamma = gamma }
 
-    let fromSeed (seed : int64) : SplitMix = create seed goldenGamma
+    let fromSeed (seed : int64) : SplitMix =
+        fromSeedAndGamma seed goldenGamma
 
     /// Mix the bits of a 64-bit arg to produce a result, computing a
     /// bijective function on 64-bit values.
