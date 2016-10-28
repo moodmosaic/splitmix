@@ -5,8 +5,6 @@ namespace SplittableRandom
 type SplitMix =
     internal { Seed : int64
                Gamma : int64 }
-    member internal this.NextSeed() =
-        { this with Seed = this.Seed + this.Gamma }
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module SplitMix =
@@ -64,12 +62,15 @@ module SplitMix =
         if n < 24 then z ^^^ 0xaaaaaaaaaaaaaaaaL
         else z
 
-    let split (x : SplitMix) : SplitMix =
-        { Seed = mix64 <| x.NextSeed()
-          Gamma = mixGamma <| x.NextSeed() }
+    let private nextSeed (x : SplitMix) : SplitMix =
+        { x with Seed = x.Seed + x.Gamma }
 
-    let nextInt32 (x : SplitMix) : int32 = mix32 <| x.NextSeed()
-    let nextInt64 (x : SplitMix) : int64 = mix64 <| x.NextSeed()
+    let split (x : SplitMix) : SplitMix =
+        { Seed = mix64 <| nextSeed x
+          Gamma = mixGamma <| nextSeed x }
+
+    let nextInt32 (x : SplitMix) : int32 = mix32 <| nextSeed x
+    let nextInt64 (x : SplitMix) : int64 = mix64 <| nextSeed x
     let nextFloat (x : SplitMix) : float =
         /// The value 'DOUBLE_ULP' is the positive difference between
         /// 1.0 and the smallest double value, larger than 1.0; it is
