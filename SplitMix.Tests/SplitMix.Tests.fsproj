@@ -47,6 +47,13 @@
     <Compile Include="Library1.fs" />
     <None Include="Script.fsx" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SplitMix\SplitMix.fsproj">
+      <Name>SplitMix</Name>
+      <Project>{97848e08-62b7-4de6-aac9-636383a91b5b}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
   </PropertyGroup>
