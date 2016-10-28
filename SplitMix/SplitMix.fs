@@ -64,6 +64,19 @@ module SplitMix =
         if n < 24 then z ^^^ 0xaaaaaaaaaaaaaaaaL
         else z
 
+    let fromRandomSeed =
+        fun () ->
+            let randomSeed =
+                System.DateTimeOffset.UtcNow.Ticks + 2L * goldenGamma
+            let dummyGamma =
+                0L
+            { Seed =
+                  mix64 { Seed = randomSeed
+                          Gamma = dummyGamma }
+              Gamma =
+                  mixGamma { Seed = randomSeed + goldenGamma
+                             Gamma = dummyGamma } }
+
     let private nextSeed (x : SplitMix) : SplitMix =
         { x with Seed = x.Seed + x.Gamma }
 
