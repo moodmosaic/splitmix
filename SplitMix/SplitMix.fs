@@ -25,7 +25,7 @@ module SplitMix =
 
     /// Mix the bits of a 64-bit arg to produce a result, computing a
     /// bijective function on 64-bit values.
-    let mix64 (x : SplitMix) : int64 =
+    let private mix64 (x : SplitMix) : int64 =
         let z = x.Seed
         let z = (z ^^^ (z >>> 33)) * 0xff51afd7ed558ccdL
         let z = (z ^^^ (z >>> 33)) * 0xc4ceb9fe1a85ec53L
@@ -33,7 +33,7 @@ module SplitMix =
 
     /// Mix the bits of a 64-bit arg to produce a result, computing a
     /// bijective function on 64-bit values.
-    let mix32 (x : SplitMix) : int =
+    let private mix32 (x : SplitMix) : int =
         let z = x.Seed
         let z = (z ^^^ (z >>> 33)) * 0xff51afd7ed558ccdL
         let z = (z ^^^ (z >>> 33)) * 0xc4ceb9fe1a85ec53L
@@ -41,7 +41,7 @@ module SplitMix =
 
     /// Mix the bits of a 64-bit arg to produce a result, computing a
     /// bijective function on 64-bit values.
-    let mix64variant13 (x : SplitMix) : int64 =
+    let private mix64variant13 (x : SplitMix) : int64 =
         let z = x.Seed
         let z = (z ^^^ (z >>> 30)) * 0xbf58476d1ce4e5b9L
         let z = (z ^^^ (z >>> 27)) * 0x94d049bb133111ebL
@@ -58,7 +58,7 @@ module SplitMix =
 
     /// Mix the bits of a 64-bit arg to produce a result, computing a
     /// bijective function on 64-bit values.
-    let mixGamma (x : SplitMix) : int64 =
+    let private mixGamma (x : SplitMix) : int64 =
         let z = mix64variant13 x ||| 1L
         let n = bitCount (z ^^^ (z >>> 1))
         if n < 24 then z ^^^ 0xaaaaaaaaaaaaaaaaL
