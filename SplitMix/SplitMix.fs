@@ -21,7 +21,7 @@ module SplitMix =
         { Seed = seed
           Gamma = gamma }
 
-    let create' (seed : int64) : SplitMix = create seed goldenGamma
+    let fromSeed (seed : int64) : SplitMix = create seed goldenGamma
 
     /// Mix the bits of a 64-bit arg to produce a result, computing a
     /// bijective function on 64-bit values.
