@@ -44,14 +44,14 @@ module SplitMix =
         let z = (z ^^^ (z >>> 27)) * 0x94d049bb133111ebL
         z ^^^ (z >>> 31)
 
-    let private bitCount (n : int64) : int =
-        let n = n - ((n >>> 1) &&& 0x5555555555555555L)
-        let n = (n &&& 0x3333333333333333L) + ((n >>> 2) &&& 0x3333333333333333L)
-        let n = (n + (n >>> 4)) &&& 0x0f0f0f0f0f0f0f0fL
-        let n = n + (n >>> 8)
-        let n = n + (n >>> 16)
-        let n = n + (n >>> 32)
-        (int n) &&& 0x7f
+    let private bitCount (x : int64) : int =
+        let x = x - ((x >>> 1) &&& 0x5555555555555555L)
+        let x = (x &&& 0x3333333333333333L) + ((x >>> 2) &&& 0x3333333333333333L)
+        let x = (x + (x >>> 4)) &&& 0x0f0f0f0f0f0f0f0fL
+        let x = x + (x >>> 8)
+        let x = x + (x >>> 16)
+        let x = x + (x >>> 32)
+        (int x) &&& 0x7f
 
     /// Mix the bits of a 64-bit arg to produce a result, computing a
     /// bijective function on 64-bit values.
