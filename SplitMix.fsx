@@ -84,7 +84,7 @@ module SplitMix =
         if n < 24 then z ^^^ 0xaaaaaaaaaaaaaaaaL
         else z
 
-    let ofRandomSeed () =
+    let ofRandomSeed () : SplitMix =
         let x = System.DateTimeOffset.UtcNow.Ticks + 2L * goldenGamma
         SplitMix (mix64 x, mixGamma x + goldenGamma)
 
