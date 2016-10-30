@@ -27,8 +27,6 @@
 // 3. https://github.com/jystic/dotnet-jack/issues/26
 //
 
-namespace SplittableRandom
-
 type [<Struct>] SplitMix internal (seed : int64, gamma : int64) =
     member this.Seed = seed
     member this.Gamma = gamma
