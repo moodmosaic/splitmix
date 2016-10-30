@@ -1,8 +1,33 @@
-namespace SplittableRandom
+//
+// This is a port of "Fast Splittable Pseudorandom Number Generators"
+// by Steele et. al. [1].
+//
+// The paper's algorithm provides decent randomness for most purposes
+// but sacrifices cryptographic-quality randomness in favor of speed.
+// The original implementation is tested with DieHarder and BigCrush;
+// see the paper for details.
+//
+// Other than the choice of initial seed for 'ofRandomSeed' this port
+// should be faithful. Currently, we have not rerun the DieHarder, or
+// BigCrush tests on this implementation.
+//
+// This implementation is a port from the paper, and also taking into
+// account the SplittableRandom.java source code in OpenJDK v8u40-b25
+// as well as splittable_random.ml in Jane Street's standard library
+// overlay (kernel) v113.33.03, and Random.fs in FsCheck v3, which is
+// the initial motivation of doing this port [2] although the idea of
+// doing this port is for having it as the default, splittable random
+// generator in dotnet-jack [3] – QuickCheck with shrinking for free.
+//
+// 1. Guy L. Steele, Jr., Doug Lea, Christine H. Flood
+//    Fast splittable pseudorandom number generators
+//    Comm ACM, 49(10), Oct 2014, pp453-472.
+//
+// 2. https://github.com/fscheck/FsCheck/issues/198
+// 3. https://github.com/jystic/dotnet-jack/issues/26
+//
 
-/// "Fast Splittable Pseudorandom Number Generators,
-/// Guy L. Steele Jr., Doug Lea, Christine H. Flood"
-/// http://2014.splashcon.org/event/oopsla2014-fast-splittable-pseudorandom-number-generators
+namespace SplittableRandom
 
 type [<Struct>] SplitMix internal (seed : int64, gamma : int64) =
     member this.Seed = seed
