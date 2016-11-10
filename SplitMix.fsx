@@ -27,12 +27,12 @@
 // 3. https://github.com/jystic/dotnet-jack/issues/26
 //
 
-type [<Struct>] SplitMix internal (seed : int64, gamma : int64) =
-    member this.Seed = seed
-    member this.Gamma = gamma
+type Seed =
+    internal { Value : int64
+               Gamma : int64 }
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
-module SplitMix =
+module Seed =
     /// A predefined gamma value's needed for initializing the "root"
     /// instances of SplittableRandom that is, instances not produced
     /// by splitting an already existing instance. We choose: the odd
@@ -40,8 +40,9 @@ module SplitMix =
     /// ratio, and call it GOLDEN_GAMMA.
     let [<Literal>] private goldenGamma : int64 = 0x9e3779b97f4a7c15L
 
-    let ofSeed (seed : int64) : SplitMix =
-        SplitMix (seed, goldenGamma)
+    let ofInt32 (x : int64) : Seed =
+        { Value = int64 x
+          Gamma = goldenGamma }
 
     /// Mix the bits of a 64-bit arg to produce a result, computing a
     /// bijective function on 64-bit values.
@@ -84,25 +85,26 @@ module SplitMix =
         if n < 24 then z ^^^ 0xaaaaaaaaaaaaaaaaL
         else z
 
-    let ofRandomSeed () : SplitMix =
+    let ofRandomSeed () : Seed =
         let x = System.DateTimeOffset.UtcNow.Ticks + 2L * goldenGamma
-        SplitMix (mix64 x, mixGamma x + goldenGamma)
+        { Value = mix64 x
+          Gamma = mixGamma x + goldenGamma }
 
-    let private nextSeed (x : SplitMix) : SplitMix =
-        SplitMix (x.Seed + x.Gamma, x.Gamma)
+    let private nextSeed (s0 : Seed) : Seed =
+        { s0 with Value = s0.Value + s0.Gamma }
 
-    let split (x : SplitMix) : SplitMix =
-        let y : SplitMix = x |> nextSeed
-        let z : SplitMix = y |> nextSeed
-        SplitMix (mix64 y.Seed, mixGamma z.Gamma)
+    let split (s0 : Seed) : Seed * Seed =
+        let s1 = nextSeed s0
+        let s2 = nextSeed s1
+        { s0 with Value = mix64 s1.Value },
+        { s1 with Value = mix64 s2.Value }
 
-    let nextInt32 (x : SplitMix) : int32 = mix32 <| (nextSeed x).Seed
-    let nextInt64 (x : SplitMix) : int64 = mix64 <| (nextSeed x).Seed
-
-    let nextFloat (x : SplitMix) : float =
+    let nextInt32 (s0 : Seed) : int32 = let s1 = nextSeed s0 in mix32 s1.Value
+    let nextInt64 (s0 : Seed) : int64 = let s1 = nextSeed s0 in mix64 s1.Value
+    let nextFloat (s0 : Seed) : float =
         /// The value 'DOUBLE_ULP' is the positive difference between
         /// 1.0 and the smallest double value, larger than 1.0; it is
         /// used for deriving a double value via a 64-bit long value,
         /// and in F# this is calculated as 1.0 / double (1L <<< 53).
         let doubleUlp = 1.110223025e-16
-        float (nextInt64 x >>> 11) * doubleUlp
+        float (nextInt64 s0 >>> 11) * doubleUlp
