@@ -40,10 +40,6 @@ module Seed =
     /// ratio, and call it GOLDEN_GAMMA.
     let [<Literal>] private goldenGamma : int64 = 0x9e3779b97f4a7c15L
 
-    let ofInt32 (x : int64) : Seed =
-        { Value = int64 x
-          Gamma = goldenGamma }
-
     /// Mix the bits of a 64-bit arg to produce a result, computing a
     /// bijective function on 64-bit values.
     let private mix64 (x : int64) : int64 =
@@ -85,10 +81,10 @@ module Seed =
         if n < 24 then z ^^^ 0xaaaaaaaaaaaaaaaaL
         else z
 
-    let ofRandomSeed () : Seed =
-        let x = System.DateTimeOffset.UtcNow.Ticks + 2L * goldenGamma
-        { Value = mix64 x
-          Gamma = mixGamma x + goldenGamma }
+    let ofInt64 (x : int64) : Seed =
+        let rnd = x + 2L * goldenGamma
+        { Value = mix64    rnd
+          Gamma = mixGamma rnd + goldenGamma }
 
     let private nextSeed (s0 : Seed) : Seed =
         { s0 with Value = s0.Value + s0.Gamma }
