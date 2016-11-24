@@ -29,17 +29,15 @@
 
 module SplitMix (
     Seed
-  , ofInteger
-  , ofRandomSeed
+  , ofInt64
   , split
   , nextInt32
   , nextInt64
   , nextFloat
   ) where
 
-import           Data.Bits      (popCount, shiftR, xor, (.|.))
-import           Data.Int       (Int32, Int64)
-import           System.CPUTime (getCPUTime)
+import           Data.Bits (popCount, shiftR, xor, (.|.))
+import           Data.Int  (Int32, Int64)
 
 data Seed = Seed
   { value :: Int64,
@@ -52,11 +50,6 @@ data Seed = Seed
 -- ratio, and call it GOLDEN_GAMMA.
 goldenGamma :: Int64
 goldenGamma =  -7046029254386353131
-
-ofInteger :: Int64 -> Seed
-ofInteger x = Seed
-  { value = x,
-    gamma = goldenGamma }
 
 -- Mix the bits of a 64-bit arg to produce a result, computing a
 -- bijective function on 64-bit values.
@@ -90,13 +83,12 @@ mixGamma x =
       n = popCount $ y `xor` (y `shiftR` 1)
    in if n < 24 then y `xor` (-6148914691236517206) else y
 
-ofRandomSeed :: () -> IO Seed
-ofRandomSeed () =
-  getCPUTime >>= \x ->
-    let x' = (fromIntegral x :: Int64) + (2 * goldenGamma) in
-    return Seed
-      { value = mix64    x',
-        gamma = mixGamma x' + goldenGamma }
+ofInt64 :: Int64 -> Seed
+ofInt64 x =
+  let rnd = x + (2 * goldenGamma) in
+  Seed
+    { value = mix64    rnd,
+      gamma = mixGamma rnd + goldenGamma }
 
 nextSeed :: Seed -> Seed
 nextSeed s0 =
