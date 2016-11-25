@@ -65,7 +65,7 @@ mix32 :: Int64 -> Int32
 mix32 x =
   let y = (x `xor` (x `shiftR` 33)) * (-49064778989728563)
       z = (y `xor` (y `shiftR` 33)) * (-4265267296055464877)
-   in (fromIntegral z `shiftR` 32) :: Int32
+   in fromIntegral (z `shiftR` 32)
 
 -- Mix the bits of a 64-bit arg to produce a result, computing a
 -- bijective function on 64-bit values.
