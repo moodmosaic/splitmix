@@ -29,62 +29,62 @@
 
 module SplitMix (
     Seed
-  , ofInt64
+  , ofWord64
   , split
-  , nextInt32
-  , nextInt64
+  , nextWord32
+  , nextWord64
   , nextFloat
   ) where
 
 import           Data.Bits (popCount, shiftR, xor, (.|.))
-import           Data.Int  (Int32, Int64)
+import           Data.Word (Word32, Word64)
 
 data Seed = Seed
-  { value :: Int64,
-    gamma :: Int64 }
+  { value :: Word64,
+    gamma :: Word64 }
 
 -- A predefined gamma value's needed for initializing the "root"
 -- instances of SplittableRandom that is, instances not produced
 -- by splitting an already existing instance. We choose: the odd
 -- integer closest to 2^64/φ, where φ = (1 + √5)/2 is the golden
 -- ratio, and call it GOLDEN_GAMMA.
-goldenGamma :: Int64
-goldenGamma =  -7046029254386353131
+goldenGamma :: Word64
+goldenGamma =  0x9e3779b97f4a7c15
 
 -- Mix the bits of a 64-bit arg to produce a result, computing a
 -- bijective function on 64-bit values.
-mix64 :: Int64 -> Int64
+mix64 :: Word64 -> Word64
 mix64 x =
-  let y = (x `xor` (x `shiftR` 33)) * (-49064778989728563)
-      z = (y `xor` (y `shiftR` 33)) * (-4265267296055464877)
+  let y = (x `xor` (x `shiftR` 33)) * 0xff51afd7ed558ccd
+      z = (y `xor` (y `shiftR` 33)) * 0xc4ceb9fe1a85ec53
    in z `xor` (z `shiftR` 33)
 
 -- Mix the bits of a 64-bit arg to produce a result, computing a
 -- bijective function on 64-bit values.
-mix32 :: Int64 -> Int32
+mix32 :: Word64 -> Word32
 mix32 x =
-  let y = (x `xor` (x `shiftR` 33)) * (-49064778989728563)
-      z = (y `xor` (y `shiftR` 33)) * (-4265267296055464877)
+  let y = (x `xor` (x `shiftR` 33)) * 0xff51afd7ed558ccd
+      z = (y `xor` (y `shiftR` 33)) * 0xc4ceb9fe1a85ec53
    in fromIntegral (z `shiftR` 32)
 
 -- Mix the bits of a 64-bit arg to produce a result, computing a
 -- bijective function on 64-bit values.
-mix64variant13 :: Int64 -> Int64
+mix64variant13 :: Word64 -> Word64
 mix64variant13 x =
-  let y = (x `xor` (x `shiftR` 30)) * (-4658895280553007687)
-      z = (y `xor` (y `shiftR` 27)) * (-7723592293110705685)
+  let y = (x `xor` (x `shiftR` 30)) * 0xbf58476d1ce4e5b9
+      z = (y `xor` (y `shiftR` 27)) * 0x94d049bb133111eb
    in z `xor` (z `shiftR` 31)
 
 -- Mix the bits of a 64-bit arg to produce a result, computing a
 -- bijective function on 64-bit values.
-mixGamma :: Int64 -> Int64
+mixGamma :: Word64 -> Word64
 mixGamma x =
   let y = mix64variant13 x .|. 1
       n = popCount $ y `xor` (y `shiftR` 1)
-   in if n < 24 then y `xor` (-6148914691236517206) else y
+   in if n < 24 then y `xor` 0xaaaaaaaaaaaaaaaa else y
 
-ofInt64 :: Int64 -> Seed
-ofInt64 x =
+ofWord64 :: Word64 -> Seed
+ofWord64 x =
   let rnd = x + (2 * goldenGamma) in
   Seed
     { value = mix64    rnd,
@@ -101,16 +101,16 @@ split s0 =
   in (s0 { value = mix64 (value s1) }
     , s1 { value = mix64 (value s2) })
 
-nextInt32 :: Seed -> Int32
-nextInt32 s0 = let s1 = nextSeed s0 in mix32 (value s1)
+nextWord32 :: Seed -> Word32
+nextWord32 s0 = let s1 = nextSeed s0 in mix32 (value s1)
 
-nextInt64 :: Seed -> Int64
-nextInt64 s0 = let s1 = nextSeed s0 in mix64 (value s1)
+nextWord64 :: Seed -> Word64
+nextWord64 s0 = let s1 = nextSeed s0 in mix64 (value s1)
 
 nextFloat :: Seed -> Float
 nextFloat s0 =
   -- The value 'DOUBLE_ULP' is the positive difference between
   -- 1.0 and the smallest double value, larger than 1.0; it is
   -- used for deriving a double value via a 64-bit long value.
-  fromIntegral (nextInt64 s0 `shiftR` 11) * doubleUlp :: Float
+  fromIntegral (nextWord64 s0 `shiftR` 11) * doubleUlp :: Float
     where doubleUlp = 1.110223025e-16
