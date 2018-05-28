@@ -1,0 +1,1 @@
+-- Moved to https://github.com/hedgehogqa/haskell-hedgehog/blob/39b15b9b4d147f6001984c4b7edab00878269da7/hedgehog/src/Hedgehog/Internal/Seed.hs
