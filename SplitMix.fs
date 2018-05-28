@@ -1,0 +1,1 @@
+-- Moved to https://github.com/hedgehogqa/fsharp-hedgehog/blob/master/src/Hedgehog/Seed.fs
